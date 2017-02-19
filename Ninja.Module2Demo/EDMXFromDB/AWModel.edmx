@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="universityModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="disciplines">
+          <Key>
+            <PropertyRef Name="discipline_id" />
+          </Key>
+          <Property Name="discipline_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nchar" MaxLength="200" Nullable="false" />
+          <Property Name="scope" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="groups">
+          <Key>
+            <PropertyRef Name="group_id" />
+          </Key>
+          <Property Name="group_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="group_code" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="year" Type="int" />
+          <Property Name="speciality" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="groups_disciplines">
+          <Key>
+            <PropertyRef Name="group_id" />
+            <PropertyRef Name="discipline_id" />
+          </Key>
+          <Property Name="group_id" Type="int" Nullable="false" />
+          <Property Name="discipline_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="students">
+          <Key>
+            <PropertyRef Name="student_id" />
+          </Key>
+          <Property Name="student_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nchar" MaxLength="200" />
+          <Property Name="group_id" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_groups_disciplines_disciplines">
+          <End Role="disciplines" Type="Self.disciplines" Multiplicity="1" />
+          <End Role="groups_disciplines" Type="Self.groups_disciplines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="disciplines">
+              <PropertyRef Name="discipline_id" />
+            </Principal>
+            <Dependent Role="groups_disciplines">
+              <PropertyRef Name="discipline_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_groups_disciplines_groups">
+          <End Role="groups" Type="Self.groups" Multiplicity="1" />
+          <End Role="groups_disciplines" Type="Self.groups_disciplines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="groups">
+              <PropertyRef Name="group_id" />
+            </Principal>
+            <Dependent Role="groups_disciplines">
+              <PropertyRef Name="group_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_students_groups">
+          <End Role="groups" Type="Self.groups" Multiplicity="1" />
+          <End Role="students" Type="Self.students" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="groups">
+              <PropertyRef Name="group_id" />
+            </Principal>
+            <Dependent Role="students">
+              <PropertyRef Name="group_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="universityModelStoreContainer">
+          <EntitySet Name="disciplines" EntityType="Self.disciplines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="groups" EntityType="Self.groups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="groups_disciplines" EntityType="Self.groups_disciplines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="students" EntityType="Self.students" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_groups_disciplines_disciplines" Association="Self.FK_groups_disciplines_disciplines">
+            <End Role="disciplines" EntitySet="disciplines" />
+            <End Role="groups_disciplines" EntitySet="groups_disciplines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_groups_disciplines_groups" Association="Self.FK_groups_disciplines_groups">
+            <End Role="groups" EntitySet="groups" />
+            <End Role="groups_disciplines" EntitySet="groups_disciplines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_students_groups" Association="Self.FK_students_groups">
+            <End Role="groups" EntitySet="groups" />
+            <End Role="students" EntitySet="students" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="universityModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="discipline">
+          <Key>
+            <PropertyRef Name="discipline_id" />
+          </Key>
+          <Property Name="discipline_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="scope" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="groups" Relationship="Self.groups_disciplines" FromRole="disciplines" ToRole="groups" />
+        </EntityType>
+        <EntityType Name="group">
+          <Key>
+            <PropertyRef Name="group_id" />
+          </Key>
+          <Property Name="group_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="group_code" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="year" Type="Int32" />
+          <Property Name="speciality" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="students" Relationship="Self.FK_students_groups" FromRole="groups" ToRole="students" />
+          <NavigationProperty Name="disciplines" Relationship="Self.groups_disciplines" FromRole="groups" ToRole="disciplines" />
+        </EntityType>
+        <EntityType Name="student">
+          <Key>
+            <PropertyRef Name="student_id" />
+          </Key>
+          <Property Name="student_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="200" FixedLength="true" Unicode="true" />
+          <Property Name="group_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="group" Relationship="Self.FK_students_groups" FromRole="students" ToRole="groups" />
+        </EntityType>
+        <Association Name="FK_students_groups">
+          <End Role="groups" Type="Self.group" Multiplicity="1" />
+          <End Role="students" Type="Self.student" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="groups">
+              <PropertyRef Name="group_id" />
+            </Principal>
+            <Dependent Role="students">
+              <PropertyRef Name="group_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="groups_disciplines">
+          <End Role="disciplines" Type="Self.discipline" Multiplicity="*" />
+          <End Role="groups" Type="Self.group" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="universityEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="disciplines" EntityType="Self.discipline" />
+          <EntitySet Name="groups" EntityType="Self.group" />
+          <EntitySet Name="students" EntityType="Self.student" />
+          <AssociationSet Name="FK_students_groups" Association="Self.FK_students_groups">
+            <End Role="groups" EntitySet="groups" />
+            <End Role="students" EntitySet="students" />
+          </AssociationSet>
+          <AssociationSet Name="groups_disciplines" Association="Self.groups_disciplines">
+            <End Role="disciplines" EntitySet="disciplines" />
+            <End Role="groups" EntitySet="groups" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="universityModelStoreContainer" CdmEntityContainer="universityEntities">
+          <EntitySetMapping Name="disciplines">
+            <EntityTypeMapping TypeName="universityModel.discipline">
+              <MappingFragment StoreEntitySet="disciplines">
+                <ScalarProperty Name="discipline_id" ColumnName="discipline_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="scope" ColumnName="scope" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="groups">
+            <EntityTypeMapping TypeName="universityModel.group">
+              <MappingFragment StoreEntitySet="groups">
+                <ScalarProperty Name="group_id" ColumnName="group_id" />
+                <ScalarProperty Name="group_code" ColumnName="group_code" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="speciality" ColumnName="speciality" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="students">
+            <EntityTypeMapping TypeName="universityModel.student">
+              <MappingFragment StoreEntitySet="students">
+                <ScalarProperty Name="student_id" ColumnName="student_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="group_id" ColumnName="group_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="groups_disciplines" TypeName="universityModel.groups_disciplines" StoreEntitySet="groups_disciplines">
+            <EndProperty Name="disciplines">
+              <ScalarProperty Name="discipline_id" ColumnName="discipline_id" />
+            </EndProperty>
+            <EndProperty Name="groups">
+              <ScalarProperty Name="group_id" ColumnName="group_id" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
